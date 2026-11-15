@@ -8,7 +8,6 @@ Requisitos
 ----------
 
 - JDK 21 o superior, con `JAVA_HOME` configurado
-- No hace falta instalar Maven: el proyecto incluye Maven Wrapper (`mvnw`)
 
 Verifica con:
 
@@ -19,7 +18,6 @@ java -version
 Comandos basicos
 ----------------
 
-En Linux/macOS usa `./mvnw`; en Windows usa `mvnw.cmd`.
 
 | Accion | Linux / macOS | Windows |
 |---|---|---|
@@ -29,15 +27,11 @@ En Linux/macOS usa `./mvnw`; en Windows usa `mvnw.cmd`.
 | Limpiar `target/` | `./mvnw clean` | `mvnw.cmd clean` |
 | Generar el paquete nativo | `./mvnw clean package -Ppaquete` | `mvnw.cmd clean package -Ppaquete` |
 
-Maven descarga automaticamente la version de JavaFX que corresponde a tu sistema operativo.
-La primera ejecucion necesita internet (descarga Maven y las dependencias).
 
 Empaquetar
 ----------
 
 `./mvnw clean package -Ppaquete` genera la aplicacion en `target/dist/`.
-El resultado solo funciona en el sistema operativo donde se genera: para tener
-la version de Windows hay que ejecutar el comando en Windows.
 
 Estructura
 ----------
@@ -58,5 +52,4 @@ git commit -m "mensaje"
 git push
 ```
 
-Antes de empezar a trabajar haz `git pull`, y no subas la carpeta `target/`
-(ya esta en `.gitignore`).
+Antes de empezar a trabajar haz `git pull`.
