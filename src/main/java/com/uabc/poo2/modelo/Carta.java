@@ -3,81 +3,95 @@ package com.uabc.poo2.modelo;
 import java.io.Serializable;
 
 public class Carta implements Serializable {
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private String id;
-    private String nombre;
-    private Tipo tipo;
-    private int valor;        //rango de 1 a 10 o mas segun la carta pokemon o evolucion o no se jejej
-    private String color;     
-    private String rutaImagen;
+  private String id;
+  private String nombre;
+  private Tipo tipo;
+  private int valor; // rango de 1 a 10 o mas segun la carta pokemon o evolucion o no se jejej
+  private String color;
+  private String rutaImagen;
 
-    public Carta() {}
+  public Carta() {
+  }
 
-    public Carta(String id, String nombre, Tipo tipo, int valor, String color, String rutaImagen) {
-        this.id = id;
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.valor = valor;
-        this.color = color;
-        this.rutaImagen = rutaImagen; //para las imagenes de las cartas, que no hare yo bro
-    }
+  public Carta(String id, String nombre, Tipo tipo, int valor, String color, String rutaImagen) {
+    this.id = id;
+    this.nombre = nombre;
+    this.tipo = tipo;
+    this.valor = valor;
+    this.color = color;
+    this.rutaImagen = rutaImagen; // para las imagenes de las cartas, que no hare yo bro
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getNombre() {
-        return nombre;
-    }
+  public String getNombre() {
+    return nombre;
+  }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
+  }
 
-    public Tipo getTipo() {
-        return tipo;
-    }
+  public Tipo getTipo() {
+    return tipo;
+  }
 
-    public void setTipo(Tipo tipo) {
-        this.tipo = tipo;
-    }
+  public void setTipo(Tipo tipo) {
+    this.tipo = tipo;
+  }
 
-    public int getValor() {
-        return valor;
-    }
+  public int getValor() {
+    return valor;
+  }
 
-    public void setValor(int valor) {
-        this.valor = valor;
-    }
+  public void setValor(int valor) {
+    this.valor = valor;
+  }
 
-    public String getColor() {
-        return color;
-    }
+  public String getColor() {
+    return color;
+  }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
+  public void setColor(String color) {
+    this.color = color;
+  }
 
-    public String getRutaImagen() {
-        return rutaImagen;
-    }
+  public String getRutaImagen() {
+    return rutaImagen;
+  }
 
-    public void setRutaImagen(String rutaImagen) {
-        this.rutaImagen = rutaImagen;
-    }
+  public void setRutaImagen(String rutaImagen) {
+    this.rutaImagen = rutaImagen;
+  }
 
-    @Override
-    public String toString() {
-        return "Carta{" +
-                "nombre='" + nombre + '\'' +
-                ", tipo=" + tipo +
-                ", valor=" + valor +
-                ", color='" + color + '\'' +
-                '}';
-    }
+  public Efectividad relacionCon(Tipo atacante) {
+    if (tipo.getResistencias().contains(atacante))
+      return Efectividad.RESISTE;
+
+    if (tipo.getDebilidades().contains(atacante))
+      return Efectividad.DEBIL;
+
+    if (tipo.getInmunidades().contains(atacante))
+      return Efectividad.INMUNE;
+
+    return Efectividad.NEUTRAL;
+  }
+
+  @Override
+  public String toString() {
+    return "Carta{" +
+        "nombre='" + nombre + '\'' +
+        ", tipo=" + tipo +
+        ", valor=" + valor +
+        ", color='" + color + '\'' +
+        '}';
+  }
 }
