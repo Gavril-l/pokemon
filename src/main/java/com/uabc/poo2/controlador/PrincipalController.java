@@ -22,7 +22,7 @@ public class PrincipalController {
 
     @FXML
     private void handleEstadisticas() {
-        System.out.println("Abriendo panel de estadísticas..."); //esto tambien no hace nada aun pero es un placeholder para la funcionalidad de estadísticas, wow vs code escribio todo eso por mi, que grande
+        System.out.println("Abriendo panel de estadísticas..."); //esto tambien no hace nada aun jeje pero es un placeholder para la funcionalidad de estadísticas, wow vs code escribio todo eso por mi, que grande
     }
 
     @FXML
@@ -30,4 +30,4 @@ public class PrincipalController {
         Stage stage = (Stage) btnSalir.getScene().getWindow();
         stage.close();
     }
-}
+} //test

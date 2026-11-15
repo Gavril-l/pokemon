@@ -8,7 +8,7 @@ public class Carta implements Serializable {
     private String id;
     private String nombre;
     private Tipo tipo;
-    private int valor;        //rango de 1 a 10 o mas segun la carta pokemon o evolucion o no se
+    private int valor;        //rango de 1 a 10 o mas segun la carta pokemon o evolucion o no se jeje
     private String color;     
     private String rutaImagen;
 
