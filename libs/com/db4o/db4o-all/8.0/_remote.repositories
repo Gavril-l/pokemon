@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Sat Nov 14 19:41:41 PST 2026
+db4o-all-8.0.jar>=
+db4o-all-8.0.pom>=

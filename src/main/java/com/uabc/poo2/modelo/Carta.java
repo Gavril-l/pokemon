@@ -89,7 +89,7 @@ public class Carta implements Serializable {
   public String toString() {
     return "Carta{" +
         "nombre='" + nombre + '\'' +
-        ", tipo=" + tipo +
+        ", tipo=" + tipo.getNombre() +
         ", valor=" + valor +
         ", color='" + color + '\'' +
         '}';

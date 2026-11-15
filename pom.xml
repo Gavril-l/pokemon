@@ -14,11 +14,17 @@
     <app.mainClass>com.uabc.poo2.vista.App</app.mainClass>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>25</java.version>
+    <java.version>21</java.version>
     <javafx.version>23.0.1</javafx.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>com.db4o</groupId>
+      <artifactId>db4o-all</artifactId>
+      <version>8.0</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>

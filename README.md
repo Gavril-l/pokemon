@@ -1,7 +1,7 @@
 pokemon
 =============
 
-Proyecto JavaFX modular (Java 25) con estructura Modelo-Vista-Controlador.
+Proyecto JavaFX modular (Java 21) con estructura Modelo-Vista-Controlador.
 Paquete base: `com.uabc.poo2`
 
 Requisitos
