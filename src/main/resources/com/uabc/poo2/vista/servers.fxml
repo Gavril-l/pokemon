@@ -9,12 +9,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uabc.poo2.controlador.ServersPageControlador">
    <top>
       <HBox alignment="CENTER" prefHeight="53.0" prefWidth="601.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Servidores" textFill="#2c3e50">
+            <Label text="MatchMaking" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="26.0" />
                </font>
@@ -34,7 +33,7 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
-            <Label text="Disponibles" textFill="#2c3e50">
+            <Label text="Salas disponibles" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="26.0" />
                </font>
@@ -52,7 +51,7 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
          <children>
-            <Label text="Inicia el tuyo" textFill="#2c3e50">
+            <Label text="Inicia una sala" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="26.0" />
                </font>
