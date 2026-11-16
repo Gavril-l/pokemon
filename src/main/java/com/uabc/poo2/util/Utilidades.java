@@ -38,6 +38,7 @@ public class Utilidades {
     }
   }
 
+  // Usa Platform.runLater() si lo vas a usar en hilo
   public static void alertar(String titulo, String texto, AlertType tipo) {
 
     Alert alerta = new Alert(tipo);
