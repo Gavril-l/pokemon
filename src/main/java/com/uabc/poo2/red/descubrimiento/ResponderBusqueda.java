@@ -51,8 +51,16 @@ public class ResponderBusqueda extends Thread {
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      if (running) // Si se cierra mientras esta corriendo es un error
+        e.printStackTrace();
+    } finally {
+      socket.close();
     }
+  }
+
+  public void detener() {
+    running = false;
+    socket.close();
   }
 
 }

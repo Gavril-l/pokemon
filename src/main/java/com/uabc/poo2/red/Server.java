@@ -2,8 +2,10 @@ package com.uabc.poo2.red;
 
 import com.uabc.poo2.red.descubrimiento.ResponderBusqueda;
 import com.uabc.poo2.red.protocolo.Mensaje;
+import com.uabc.poo2.red.protocolo.Protocolo;
 import com.uabc.poo2.red.protocolo.TipoDeMensaje;
 import java.io.ObjectOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -15,26 +17,27 @@ import java.net.Socket;
 public class Server extends Thread { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo
                                      // mientras
                                      // espero jale cuando hagas el pull o si no me mato
-  private static final int PUERTO_TCP = 1234; // Puerto TCP pa la partida
-  private boolean running = true;
+  private volatile boolean running = true;
+  private volatile ServerSocket serverSocket;
+  private volatile Socket socketCliente;
+  private volatile ResponderBusqueda responder;
 
   @Override
   public void run() {
 
-    ResponderBusqueda hiloDeRespuesta = new ResponderBusqueda();
-    hiloDeRespuesta.setDaemon(true);
-    hiloDeRespuesta.start();
-    // Que se inicie el hilo de respuesta y que siempre este
-    // activo junto con el servidor para que sea detectable
-    // luego quiza habra que poner una bandera de "en partida" o algo
-    // (Capaz luego mejor mando un TipoDeMensaje en el responder busqueda)
+    try (ServerSocket ss = new ServerSocket(Protocolo.PUERTO_TCP)) {
+      serverSocket = ss;
 
-    try (ServerSocket serverSocket = new ServerSocket(PUERTO_TCP)) {
+      responder = new ResponderBusqueda();
+      responder.setDaemon(true);
+      responder.start();
 
-      System.out.println("Servidor iniciado en el puerto " + PUERTO_TCP + ". esperando jugador/retador...");
+      System.out.println("Servidor iniciado en el puerto " + Protocolo.PUERTO_TCP + ". esperando jugador/retador...");
 
       // el servidor se queda bloqueado aquí hasta que un cliente se conecte
-      Socket socketCliente = serverSocket.accept();
+      socketCliente = serverSocket.accept();
+      responder.detener();
+
       System.out.println("Conexion establecida con el cliente: " + socketCliente.getInetAddress());
 
       // los canales de comunicación por objetos con el objectstream
@@ -61,17 +64,33 @@ public class Server extends Thread { // esta vaina usa la clase Mensaje pero com
           }
         }
 
+      } catch (EOFException e) {
+        System.err.println("El cliente se desconecto" + e.getMessage());
+
       } catch (ClassNotFoundException e) {
+        if (running)
+          e.printStackTrace();
+      }
+    } catch (IOException e) {
+      if (running) {
+        System.err.println("Error en el servidor: " + e.getMessage());
         e.printStackTrace();
       }
-
-    } catch (IOException e) {
-      System.err.println("Error en el servidor: " + e.getMessage());
-      e.printStackTrace();
+    } finally {
+      if (responder != null)
+        responder.detener();
     }
+
   }
 
   public void detener() {
     this.running = false;
+    try {
+      if (serverSocket != null)
+        serverSocket.close();
+      if (socketCliente != null)
+        socketCliente.close();
+    } catch (IOException e) {
+    }
   }
 }
