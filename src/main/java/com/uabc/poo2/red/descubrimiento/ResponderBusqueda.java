@@ -2,36 +2,45 @@ package com.uabc.poo2.red.descubrimiento;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.net.DatagramPacket;
+
+import com.uabc.poo2.red.protocolo.Protocolo;
 
 /**
  * ResponderBusqueda
  */
 
 public class ResponderBusqueda extends Thread {
-  private static final int PUERTO_UDP = 4445; // Puerto nomas para buscar
-  private static final String PETICION = "BUSCANDO"; // El mensaje que le tiene que llegar
+  private final DatagramSocket socket;
+  private volatile boolean running = true;
+
+  public ResponderBusqueda() throws SocketException {
+    socket = new DatagramSocket(Protocolo.PUERTO_UDP); // aquí saltaría el BindException
+  }
 
   @Override
   public void run() {
     // Iniciamos el servidor
-    try (DatagramSocket socket = new DatagramSocket(PUERTO_UDP)) {
+    try {
 
       byte[] buffer = new byte[256];
 
-      while (true) {
+      while (running) {
         DatagramPacket paquete = new DatagramPacket(buffer, buffer.length); // Especificamos como tinee que ser el
                                                                             // paquete
         socket.receive(paquete); // Se queda esperando recibir un mensaje
 
         String mensaje = new String(paquete.getData(), 0, paquete.getLength()); // Cuando llega, lo volvemos String
 
-        if (mensaje.equals(PETICION)) { // Vemos si es el mensaje que esperabamos
+        if (mensaje.equals(Protocolo.PETICION_BUSQUEDA)) { // Vemos si es el mensaje que esperabamos
 
-          String respuesta = ("ENCONTRASTE;Sala A;1234"); // Le mandamos EY LO ENCONTRASTE (luego ponemos algo mejor),
-                                                          // el
-                                                          // nombre de la sala (tmb se ocupa cambiar luego como por el
-                                                          // nombre de usuario o algo asi) yy el puerto del servidor TCP
+          String respuesta = (Protocolo.RESPUESTA_BUSQUEDA + Protocolo.SEPARADOR + "Sala A" + Protocolo.SEPARADOR
+              + Protocolo.PUERTO_TCP);
+          // Le mandamos EY LO ENCONTRASTE (luego el ponemos algo mejor),
+          // nombre de la sala (tmb se ocupa cambiar luego como por el
+          // nombre de usuario o algo asi) yy el puerto del servidor TCP
+
           byte[] datos = respuesta.getBytes(); // Lo volvemos bytes
 
           DatagramPacket paqueteRespuesta = new DatagramPacket(datos, datos.length, paquete.getAddress(),
