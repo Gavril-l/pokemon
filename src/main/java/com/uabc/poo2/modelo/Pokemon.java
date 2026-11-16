@@ -2,7 +2,7 @@ package com.uabc.poo2.modelo;
 
 import java.io.Serializable;
 
-public class Carta implements Serializable {
+public class Pokemon implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private String id;
@@ -12,10 +12,10 @@ public class Carta implements Serializable {
   private String color;
   private String rutaImagen;
 
-  public Carta() {
+  public Pokemon() {
   }
 
-  public Carta(String id, String nombre, Tipo tipo, int valor, String color, String rutaImagen) {
+  public Pokemon(String id, String nombre, Tipo tipo, int valor, String color, String rutaImagen) {
     this.id = id;
     this.nombre = nombre;
     this.tipo = tipo;
@@ -87,7 +87,7 @@ public class Carta implements Serializable {
 
   @Override
   public String toString() {
-    return "Carta{" +
+    return "Pokemon{" +
         "nombre='" + nombre + '\'' +
         ", tipo=" + tipo.getNombre() +
         ", valor=" + valor +

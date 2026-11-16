@@ -1,4 +1,4 @@
-package com.uabc.poo2.server.descubrimiento;
+package com.uabc.poo2.red.descubrimiento;
 
 import java.io.IOException;
 import java.net.DatagramSocket;

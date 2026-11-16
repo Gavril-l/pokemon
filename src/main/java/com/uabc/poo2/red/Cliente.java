@@ -1,27 +1,41 @@
-package com.uabc.poo2.server;
+package com.uabc.poo2.red;
 
-import com.uabc.poo2.modelo.Mensaje;
-import com.uabc.poo2.server.descubrimiento.ServidorEncontrado;
+import com.uabc.poo2.red.protocolo.Mensaje;
+import com.uabc.poo2.red.descubrimiento.ServidorEncontrado;
+import com.uabc.poo2.red.descubrimiento.BuscarServidores;
 import java.io.*;
 import java.net.*;
+import java.util.List;
 
-public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo mientras
-                        // espero jale cuando hagas el pull o si no me mato
+public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo
+                       // mientras (ya la pusimos)
+                       // espero jale cuando hagas el pull o si no me mato
   private Socket socket;
   private ObjectOutputStream oos;
   private ObjectInputStream ois;
+  private List<ServidorEncontrado> servidoresDisponibles;
 
-  //metodo para conectar usando el ServidorEncontrado del UDP que pusiste
+  // Esto para poner los datos y en pantalla y poder seleccionarlos
+  public List<ServidorEncontrado> getServidoresDisponibles() {
+    return servidoresDisponibles;
+  }
+
+  //
+  public void setServidoresDisponibles(List<ServidorEncontrado> servidoresDisponibles) {
+    this.servidoresDisponibles = servidoresDisponibles;
+  }
+
+  // metodo para conectar usando el ServidorEncontrado del UDP que pusiste
   public void conectar(ServidorEncontrado servidor) {
     conectar(servidor.getDireccion(), servidor.getPuertoTcp());
   }
 
-  //metodo para conectar usando InetAddress y puerto
+  // metodo para conectar usando InetAddress y puerto
   public void conectar(InetAddress ipServidor, int puerto) {
     try {
       System.out.println("conectando al servidor en " + ipServidor.getHostAddress() + ":" + puerto + "...");
       socket = new Socket(ipServidor, puerto);
-      
+
       // los canales de comunicación por objetos con el objectstream
       oos = new ObjectOutputStream(socket.getOutputStream());
       ois = new ObjectInputStream(socket.getInputStream());
@@ -63,7 +77,7 @@ public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo 
     }
   }
 
-  //pa cerrar la conexión con el servidor
+  // pa cerrar la conexión con el servidor
   public void desconectar() {
     try {
       if (socket != null && !socket.isClosed()) {
@@ -74,4 +88,14 @@ public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo 
       e.printStackTrace();
     }
   }
+
+  // Esto se va a usar en cuanto se cree el cliente para buscar los servidores
+  public void buscarServidores() {
+    try {
+      servidoresDisponibles = BuscarServidores.buscar();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
 }
