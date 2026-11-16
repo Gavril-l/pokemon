@@ -5,6 +5,7 @@ import com.uabc.poo2.red.descubrimiento.ServidorEncontrado;
 import com.uabc.poo2.red.descubrimiento.BuscarServidores;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo
@@ -13,7 +14,7 @@ public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo 
   private Socket socket;
   private ObjectOutputStream oos;
   private ObjectInputStream ois;
-  private List<ServidorEncontrado> servidoresDisponibles;
+  private volatile List<ServidorEncontrado> servidoresDisponibles = new ArrayList<>();
 
   // Esto para poner los datos y en pantalla y poder seleccionarlos
   public List<ServidorEncontrado> getServidoresDisponibles() {
