@@ -1,7 +1,8 @@
 package com.uabc.poo2.server.descubrimiento;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramSocket;
+import java.net.DatagramPacket;
 
 /**
  * ResponderBusqueda
