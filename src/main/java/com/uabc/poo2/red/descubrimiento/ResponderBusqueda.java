@@ -14,9 +14,11 @@ import com.uabc.poo2.red.protocolo.Protocolo;
 public class ResponderBusqueda extends Thread {
   private final DatagramSocket socket;
   private volatile boolean running = true;
+  private String serverName;
 
-  public ResponderBusqueda() throws SocketException {
+  public ResponderBusqueda(String serverName) throws SocketException {
     socket = new DatagramSocket(Protocolo.PUERTO_UDP); // aquí saltaría el BindException
+    this.serverName = serverName;
   }
 
   @Override
@@ -35,7 +37,7 @@ public class ResponderBusqueda extends Thread {
 
         if (mensaje.equals(Protocolo.PETICION_BUSQUEDA)) { // Vemos si es el mensaje que esperabamos
 
-          String respuesta = (Protocolo.RESPUESTA_BUSQUEDA + Protocolo.SEPARADOR + "Sala A" + Protocolo.SEPARADOR
+          String respuesta = (Protocolo.RESPUESTA_BUSQUEDA + Protocolo.SEPARADOR + serverName + Protocolo.SEPARADOR
               + Protocolo.PUERTO_TCP);
           // Le mandamos EY LO ENCONTRASTE (luego el ponemos algo mejor),
           // nombre de la sala (tmb se ocupa cambiar luego como por el

@@ -7,6 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -29,8 +30,16 @@ public class ServersPageControlador {
   private ScrollPane spServidoresDisponibles;
 
   @FXML
+  private TextField txtSala;
+
+  @FXML
   void onIniciarServidorClick(ActionEvent event) {
-    servidor = new Server();
+    if (txtSala.getText().isBlank() || txtSala.getText().isEmpty()) {
+      Utilidades.alertar("Error de sala", "Ingresa un nombre de sala valido", Alert.AlertType.WARNING);
+      return;
+    }
+
+    servidor = new Server(txtSala.getText());
     servidor.setDaemon(true);
     servidor.start();
     btnIniciarServidor.setDisable(true);

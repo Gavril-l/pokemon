@@ -21,6 +21,11 @@ public class Server extends Thread { // esta vaina usa la clase Mensaje pero com
   private volatile ServerSocket serverSocket;
   private volatile Socket socketCliente;
   private volatile ResponderBusqueda responder;
+  private String serverName;
+
+  public Server(String serverName) {
+    this.serverName = serverName;
+  }
 
   @Override
   public void run() {
@@ -28,7 +33,7 @@ public class Server extends Thread { // esta vaina usa la clase Mensaje pero com
     try (ServerSocket ss = new ServerSocket(Protocolo.PUERTO_TCP)) {
       serverSocket = ss;
 
-      responder = new ResponderBusqueda();
+      responder = new ResponderBusqueda(serverName);
       responder.setDaemon(true);
       responder.start();
 
