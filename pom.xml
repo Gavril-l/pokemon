@@ -17,6 +17,12 @@
     <java.version>21</java.version>
     <javafx.version>23.0.1</javafx.version>
   </properties>
+  <repositories>
+    <repository>
+      <id>libs-locales</id>
+      <url>file://${project.basedir}/libs</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
