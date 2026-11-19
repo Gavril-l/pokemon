@@ -14,17 +14,24 @@ import java.net.Socket;
 /**
  * Server
  */
-public class Server extends Thread { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo
-                                     // mientras
-                                     // espero jale cuando hagas el pull o si no me mato
+public class Server extends Thread {
   private volatile boolean running = true;
   private volatile ServerSocket serverSocket;
   private volatile Socket socketCliente;
   private volatile ResponderBusqueda responder;
   private String serverName;
+  private Runnable onClienteConectado;
 
   public Server(String serverName) {
     this.serverName = serverName;
+  }
+
+  public void setOnClienteConectado(Runnable onClienteConectado) {
+    this.onClienteConectado = onClienteConectado;
+  }
+
+  public String getServerName() {
+    return serverName;
   }
 
   @Override
@@ -55,14 +62,17 @@ public class Server extends Thread { // esta vaina usa la clase Mensaje pero com
         oos.writeObject(bienvenida);
         oos.flush();
 
+        // Avisar al controlador del host que ya entró el oponente
+        if (onClienteConectado != null) {
+          onClienteConectado.run();
+        }
+
         // ciclo para escuchar los mesajes o jugadas del cliente durante el juego
         while (running) {
           Mensaje mensajeRecibido = (Mensaje) ois.readObject();
           if (mensajeRecibido != null) {
             System.out.println("mensaje recibido del cliente: " + mensajeRecibido);
 
-            // Aquí después pondremos la lógica de cuando el cliente tire una carta etc etc
-            // Por ahora solo imprime el mensaje recibido
             if (TipoDeMensaje.SELECCIONAR_CARTA.equals(mensajeRecibido.getTipo())) {
               System.out.println("el jugador tiro la carta: " + mensajeRecibido.getPokemon());
             }

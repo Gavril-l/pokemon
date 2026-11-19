@@ -1,12 +1,19 @@
 package com.uabc.poo2.controlador;
 
-import com.uabc.poo2.red.Cliente;
-import com.uabc.poo2.util.Utilidades;
-
+import java.io.IOException;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
+import com.uabc.poo2.red.Cliente;
+import com.uabc.poo2.red.Server;
+import com.uabc.poo2.util.Utilidades;
 
 public class PrincipalController {
 
@@ -19,26 +26,50 @@ public class PrincipalController {
   @FXML
   private Button btnSalir;
 
-  @FXML
-  private void handleJugar(ActionEvent event) {
-    System.out.println("Redirigiendo a sala de espera/matchmaking..."); // esto no hace nada aun pero es un placeholder
-                                                                        // para la funcionalidad de matchmaking
-    ServersPageControlador controlador = Utilidades.cambiarPantalla(event, "MatchMaking", "servers.fxml")
-        .getController();
-    controlador.setCliente(new Cliente());
+  private Cliente cliente;
+  private Server servidor;
 
+  public void setConexion(Cliente cliente, Server servidor) {
+    this.cliente = cliente;
+    this.servidor = servidor;
   }
 
   @FXML
-  private void handleEstadisticas(ActionEvent event) {
-    System.out.println("Abriendo panel de estadísticas..."); // esto tambien no hace nada aun jeje pero es un
-                                                             // placeholder para la funcionalidad de estadísticas, wow
-                                                             // vs code escribio todo eso por mi, que grande
+  void handleJugar(ActionEvent event) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uabc/poo2/vista/servers.fxml"));
+      Parent root = loader.load();
+
+      ServersPageControlador controlador = loader.getController();
+      if (cliente == null) {
+        cliente = new Cliente();
+      }
+      controlador.setCliente(cliente);
+      if (servidor != null) {
+        controlador.setServidor(servidor);
+      }
+
+      Stage stage = (Stage) btnJugar.getScene().getWindow();
+      stage.setScene(new Scene(root));
+      stage.setTitle("MatchMaking - Pokémon Card-Jitsu");
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+      Utilidades.alertar("Error de vista", "No se pudo abrir servers.fxml: " + e.getMessage(),
+          Alert.AlertType.ERROR);
+    }
   }
 
   @FXML
-  private void handleSalir(ActionEvent event) {
-    Stage stage = (Stage) btnSalir.getScene().getWindow();
-    stage.close();
+  void handleEstadisticas(ActionEvent event) {
+    Utilidades.alertar("Estadísticas", "Sección de estadísticas en construcción.", Alert.AlertType.INFORMATION);
   }
-} // test
+
+  @FXML
+  void handleSalir(ActionEvent event) {
+    if (cliente != null) {
+      cliente.desconectar();
+    }
+    Platform.exit();
+  }
+}

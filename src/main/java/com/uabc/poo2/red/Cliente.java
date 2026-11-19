@@ -8,31 +8,27 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo se la voy poniendo
-                       // mientras (ya la pusimos)
-                       // espero jale cuando hagas el pull o si no me mato
+public class Cliente {
   private Socket socket;
   private ObjectOutputStream oos;
   private ObjectInputStream ois;
   private volatile List<ServidorEncontrado> servidoresDisponibles = new ArrayList<>();
 
-  // Esto para poner los datos y en pantalla y poder seleccionarlos
   public List<ServidorEncontrado> getServidoresDisponibles() {
     return servidoresDisponibles;
   }
 
-  //
   public void setServidoresDisponibles(List<ServidorEncontrado> servidoresDisponibles) {
     this.servidoresDisponibles = servidoresDisponibles;
   }
 
-  // metodo para conectar usando el ServidorEncontrado del UDP que pusiste
-  public void conectar(ServidorEncontrado servidor) {
-    conectar(servidor.getDireccion(), servidor.getPuertoTcp());
+  // metodo para conectar usando el ServidorEncontrado del UDP
+  public boolean conectar(ServidorEncontrado servidor) {
+    return conectar(servidor.getDireccion(), servidor.getPuertoTcp());
   }
 
   // metodo para conectar usando InetAddress y puerto
-  public void conectar(InetAddress ipServidor, int puerto) {
+  public boolean conectar(InetAddress ipServidor, int puerto) {
     try {
       System.out.println("conectando al servidor en " + ipServidor.getHostAddress() + ":" + puerto + "...");
       socket = new Socket(ipServidor, puerto);
@@ -47,20 +43,24 @@ public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo 
       if (bienvenida != null) {
         System.out.println("Mensaje del servidor: " + bienvenida.getContenido());
       }
+      return true;
 
     } catch (IOException | ClassNotFoundException e) {
       System.err.println("Error al conectar con el servidor: " + e.getMessage());
       e.printStackTrace();
+      desconectar();
+      return false;
     }
   }
 
   // sobrecarga para mantener compatibilidad si le pasas la IP como string
-  public void conectar(String ipServidor, int puerto) {
+  public boolean conectar(String ipServidor, int puerto) {
     try {
-      conectar(InetAddress.getByName(ipServidor), puerto);
+      return conectar(InetAddress.getByName(ipServidor), puerto);
     } catch (UnknownHostException e) {
       System.err.println("Dirección IP inválida: " + e.getMessage());
       e.printStackTrace();
+      return false;
     }
   }
 
@@ -98,5 +98,4 @@ public class Cliente { // esta vaina usa la clase Mensaje pero como no la tengo 
       e.printStackTrace();
     }
   }
-
 }
