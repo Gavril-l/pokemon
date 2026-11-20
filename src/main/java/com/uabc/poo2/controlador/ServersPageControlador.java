@@ -1,12 +1,9 @@
 package com.uabc.poo2.controlador;
 
-import java.io.IOException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,11 +11,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
 import com.uabc.poo2.red.descubrimiento.ServidorEncontrado;
+import com.uabc.poo2.red.protocolo.Protocolo;
 import com.uabc.poo2.util.Utilidades;
 
 public class ServersPageControlador {
@@ -41,8 +38,9 @@ public class ServersPageControlador {
   @FXML
   void onIniciarServidorClick(ActionEvent event) {
     String nombreSala = txtSala.getText().trim();
-    if (nombreSala.isEmpty()) {
-      Utilidades.alertar("Error de sala", "Ingresa un nombre de sala valido", Alert.AlertType.WARNING);
+    String error = Protocolo.validarNombreSala(nombreSala);
+    if (error != null) {
+      Utilidades.alertar("Error de sala", error, Alert.AlertType.WARNING);
       return;
     }
 
@@ -51,6 +49,12 @@ public class ServersPageControlador {
       detenerBusqueda();
       Platform.runLater(() -> cambiarAPantallaPartida(nombreSala, btnIniciarServidor));
     });
+    // Si el servidor no puede iniciar (puerto ocupado, etc.) se avisa y se rehabilita el boton
+    servidor.setOnError(mensaje -> Platform.runLater(() -> {
+      Utilidades.alertar("Error de sala", mensaje, Alert.AlertType.ERROR);
+      servidor = null;
+      btnIniciarServidor.setDisable(false);
+    }));
     servidor.setDaemon(true);
     servidor.start();
     btnIniciarServidor.setDisable(true);
@@ -84,7 +88,11 @@ public class ServersPageControlador {
   private void actualizarServidores() {
     VBox vbServer = new VBox(20);
 
-    for (ServidorEncontrado server : cliente.getServidoresDisponibles()) {
+       for (ServidorEncontrado server : cliente.getServidoresDisponibles()) {
+      // si yo cree una sala, la sala que esta en mi propia computadora es la mia: no se muestra
+      if (servidor != null && server.esLocal()) {
+        continue;
+      }
       HBox contenedor = new HBox(20);
       Label nombre = new Label(server.getNombre());
       Button btnConectar = new Button("Conectar");
@@ -103,7 +111,7 @@ public class ServersPageControlador {
     btnConectar.setDisable(true);
     detenerBusqueda();
 
-    new Thread(() -> {
+    Thread hiloConexion = new Thread(() -> {
       boolean conectado = cliente.conectar(server);
 
       Platform.runLater(() -> {
@@ -118,7 +126,9 @@ public class ServersPageControlador {
           }
         }
       });
-    }).start();
+    });
+    hiloConexion.setDaemon(true);
+    hiloConexion.start();
   }
 
   private void cambiarAPantallaPartida(String nombreSala, javafx.scene.Node nodoOrigen) {
@@ -127,30 +137,21 @@ public class ServersPageControlador {
     }
     transicionandoAPartida = true;
 
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uabc/poo2/vista/partida.fxml"));
-      Parent root = loader.load();
-
-      Object controlador = loader.getController();
-      if (controlador instanceof PartidaController partidaController) {
-        partidaController.inicializarPartida(cliente, servidor, nombreSala);
-      }
-
-      Stage stage = (Stage) nodoOrigen.getScene().getWindow();
-      stage.setScene(new Scene(root));
-      stage.setTitle("Partida - " + nombreSala);
-      stage.show();
-    } catch (IOException e) {
+    FXMLLoader loader = Utilidades.cambiarPantalla(nodoOrigen, "Partida - " + nombreSala, "partida.fxml");
+    if (loader == null) {
       transicionandoAPartida = false;
-      e.printStackTrace();
-      Utilidades.alertar("Error de vista", "No se pudo abrir partida.fxml: " + e.getMessage(),
-          Alert.AlertType.ERROR);
       if (nodoOrigen instanceof Button btn) {
         btn.setDisable(false);
       }
       if (cliente != null) {
         setCliente(cliente);
       }
+      return;
+    }
+
+    Object controlador = loader.getController();
+    if (controlador instanceof PartidaController partidaController) {
+      partidaController.inicializarPartida(cliente, servidor, nombreSala);
     }
   }
 

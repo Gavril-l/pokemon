@@ -1,6 +1,7 @@
 package com.uabc.poo2.red;
 
 import com.uabc.poo2.red.protocolo.Mensaje;
+import com.uabc.poo2.red.protocolo.Protocolo;
 import com.uabc.poo2.red.descubrimiento.ServidorEncontrado;
 import com.uabc.poo2.red.descubrimiento.BuscarServidores;
 import java.io.*;
@@ -31,15 +32,21 @@ public class Cliente {
   public boolean conectar(InetAddress ipServidor, int puerto) {
     try {
       System.out.println("conectando al servidor en " + ipServidor.getHostAddress() + ":" + puerto + "...");
-      socket = new Socket(ipServidor, puerto);
+
+      // con timeout, si no el new Socket(ip, puerto) se puede quedar colgado
+      socket = new Socket();
+      socket.connect(new InetSocketAddress(ipServidor, puerto), Protocolo.TIMEOUT_CONEXION_MS);
 
       // los canales de comunicación por objetos con el objectstream
       oos = new ObjectOutputStream(socket.getOutputStream());
       ois = new ObjectInputStream(socket.getInputStream());
       System.out.println("conectado exitosamente al servidor");
 
-      // para leer el mensaje de bienvenida del servidor
+      // para leer el mensaje de bienvenida del servidor (con limite de espera)
+      socket.setSoTimeout(Protocolo.TIMEOUT_BIENVENIDA_MS);
       Mensaje bienvenida = (Mensaje) ois.readObject();
+      socket.setSoTimeout(0); // ya en partida se espera sin limite
+
       if (bienvenida != null) {
         System.out.println("Mensaje del servidor: " + bienvenida.getContenido());
       }

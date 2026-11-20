@@ -1,15 +1,11 @@
 package com.uabc.poo2.controlador;
 
-import java.io.IOException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
 
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
@@ -36,27 +32,18 @@ public class PrincipalController {
 
   @FXML
   void handleJugar(ActionEvent event) {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uabc/poo2/vista/servers.fxml"));
-      Parent root = loader.load();
+    FXMLLoader loader = Utilidades.cambiarPantalla(event, "MatchMaking - Pokémon Card-Jitsu", "servers.fxml");
+    if (loader == null) {
+      return;
+    }
 
-      ServersPageControlador controlador = loader.getController();
-      if (cliente == null) {
-        cliente = new Cliente();
-      }
-      controlador.setCliente(cliente);
-      if (servidor != null) {
-        controlador.setServidor(servidor);
-      }
-
-      Stage stage = (Stage) btnJugar.getScene().getWindow();
-      stage.setScene(new Scene(root));
-      stage.setTitle("MatchMaking - Pokémon Card-Jitsu");
-      stage.show();
-    } catch (IOException e) {
-      e.printStackTrace();
-      Utilidades.alertar("Error de vista", "No se pudo abrir servers.fxml: " + e.getMessage(),
-          Alert.AlertType.ERROR);
+    ServersPageControlador controlador = loader.getController();
+    if (cliente == null) {
+      cliente = new Cliente();
+    }
+    controlador.setCliente(cliente);
+    if (servidor != null) {
+      controlador.setServidor(servidor);
     }
   }
 
@@ -69,6 +56,9 @@ public class PrincipalController {
   void handleSalir(ActionEvent event) {
     if (cliente != null) {
       cliente.desconectar();
+    }
+    if (servidor != null) {
+      servidor.detener();
     }
     Platform.exit();
   }

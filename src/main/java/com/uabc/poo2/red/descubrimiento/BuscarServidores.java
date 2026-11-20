@@ -5,7 +5,9 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import com.uabc.poo2.red.protocolo.Protocolo;
 
 /**
@@ -16,20 +18,20 @@ public class BuscarServidores {
 
   public static List<ServidorEncontrado> buscar() throws IOException {
     List<ServidorEncontrado> encontrados = new ArrayList<>();
+    Set<String> vistos = new HashSet<>(); // para no repetir una sala que responde por varias interfaces
 
     // Iniciamos un servidor
     try (DatagramSocket socket = new DatagramSocket()) {
       socket.setBroadcast(true); // Para que si se mande un mensaje a todos
       socket.setSoTimeout(Protocolo.TIMEOUT_BUSQUEDA_MS); // Tiempo limite de respuesta
 
-      byte[] bytes = Protocolo.PETICION_BUSQUEDA.getBytes(); // Solo se pueden mandar bytes
+      byte[] bytes = Protocolo.PETICION_BUSQUEDA.getBytes(Protocolo.CHARSET); // Solo se pueden mandar bytes
       // El InetAddres es como, la direccion esa para todos que mencione en el commit
 
       // Mandamos el datagrama a todas las direcciones de broadcast
       for (InetAddress broadcast : getDireccionesBroadcast()) {
         try {
           socket.send(new DatagramPacket(bytes, bytes.length, broadcast, Protocolo.PUERTO_UDP));
-          System.out.println(broadcast.getHostAddress()); // TODO: Esto lo vamos a quitar luego
         } catch (IOException e) {
           System.err.println("No se pudo enviar a " + broadcast.getHostAddress() + ": " + e.getMessage());
         }
@@ -51,15 +53,25 @@ public class BuscarServidores {
         // || NetworkInterface.getByInetAddress(respuesta.getAddress()) != null)
         // continue;
 
-        String mensaje = new String(respuesta.getData(), 0, respuesta.getLength());
+        String mensaje = new String(respuesta.getData(), 0, respuesta.getLength(), Protocolo.CHARSET);
         String[] partes = mensaje.split(Protocolo.SEPARADOR); // Si llega la respuesta, lo convierto en String y la
                                                               // parto en ; para ver que dice
 
         if (partes.length == 3 && partes[0].equals(Protocolo.RESPUESTA_BUSQUEDA)) { // Para confirmar que haya sido
                                                                                     // nuestro mensaje
 
-          ServidorEncontrado server = new ServidorEncontrado(partes[1], respuesta.getAddress(),
-              Integer.parseInt(partes[2]));
+          int puertoTcp;
+          try {
+            puertoTcp = Integer.parseInt(partes[2]);
+          } catch (NumberFormatException e) {
+            continue; // paquete mal formado, lo ignoramos
+          }
+
+          // misma sala (ip + puerto) que ya vimos: la saltamos
+          if (!vistos.add(respuesta.getAddress().getHostAddress() + ":" + puertoTcp))
+            continue;
+
+          ServidorEncontrado server = new ServidorEncontrado(partes[1], respuesta.getAddress(), puertoTcp);
 
           encontrados.add(server);
 

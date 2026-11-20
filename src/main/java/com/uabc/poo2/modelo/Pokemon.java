@@ -89,7 +89,7 @@ public class Pokemon implements Serializable {
   public String toString() {
     return "Pokemon{" +
         "nombre='" + nombre + '\'' +
-        ", tipo=" + tipo.getNombre() +
+        ", tipo=" + (tipo != null ? tipo.getNombre() : "sin tipo") +
         ", valor=" + valor +
         ", color='" + color + '\'' +
         '}';

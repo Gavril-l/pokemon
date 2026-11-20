@@ -19,12 +19,18 @@ public class Utilidades {
   private static final String RUTA_FXML = "/com/uabc/poo2/vista/";
 
   public static FXMLLoader cambiarPantalla(ActionEvent event, String titulo, String recurso) {
+    return cambiarPantalla((Node) event.getSource(), titulo, recurso);
+  }
+
+  // igual que la linea de arriba pero para cuando no hay ActionEvent (por ejemplo si se
+  // llama desde un callback o un hilo). devuelve null si no pudo cargar la vista.
+  public static FXMLLoader cambiarPantalla(Node origen, String titulo, String recurso) {
 
     try {
 
       FXMLLoader fxmlLoader = new FXMLLoader(Utilidades.class.getResource(RUTA_FXML + recurso));
       Scene scene = new Scene(fxmlLoader.load());
-      Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+      Stage stage = (Stage) origen.getScene().getWindow();
 
       stage.setScene(scene);
       stage.setTitle(titulo);

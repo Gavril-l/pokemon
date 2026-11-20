@@ -1,15 +1,10 @@
 package com.uabc.poo2.controlador;
 
-import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
@@ -46,27 +41,22 @@ public class PartidaController {
 
   @FXML
   void onVolverClick(ActionEvent event) {
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uabc/poo2/vista/servers.fxml"));
-      Parent root = loader.load();
-
-      ServersPageControlador controlador = loader.getController();
-      if (cliente == null) {
-        cliente = new Cliente();
-      }
-      controlador.setCliente(cliente);
-      if (servidor != null) {
-        controlador.setServidor(servidor);
-      }
-
-      Stage stage = (Stage) btnVolver.getScene().getWindow();
-      stage.setScene(new Scene(root));
-      stage.setTitle("MatchMaking - Pokémon Card-Jitsu");
-      stage.show();
-    } catch (IOException e) {
-      e.printStackTrace();
-      Utilidades.alertar("Error de vista", "No se pudo volver a servers.fxml: " + e.getMessage(),
-          Alert.AlertType.ERROR);
+    // al salir de la partida se cierra todo, si no los puertos 1234 (TCP) y
+    //  4445 (UDP) se quedan ocupados y no se puede volver a crear una sala.
+    if (cliente != null) {
+      cliente.desconectar();
     }
+    if (servidor != null) {
+      servidor.detener();
+    }
+
+    FXMLLoader loader = Utilidades.cambiarPantalla(event, "MatchMaking - Pokémon Card-Jitsu", "servers.fxml");
+    if (loader == null) {
+      return;
+    }
+
+    // Cliente nuevo: el anterior ya esta desconectado
+    ServersPageControlador controlador = loader.getController();
+    controlador.setCliente(new Cliente());
   }
 }

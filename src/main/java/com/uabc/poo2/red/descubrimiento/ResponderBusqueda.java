@@ -33,7 +33,7 @@ public class ResponderBusqueda extends Thread {
                                                                             // paquete
         socket.receive(paquete); // Se queda esperando recibir un mensaje
 
-        String mensaje = new String(paquete.getData(), 0, paquete.getLength()); // Cuando llega, lo volvemos String
+        String mensaje = new String(paquete.getData(), 0, paquete.getLength(), Protocolo.CHARSET); // Cuando llega, lo volvemos String
 
         if (mensaje.equals(Protocolo.PETICION_BUSQUEDA)) { // Vemos si es el mensaje que esperabamos
 
@@ -43,7 +43,7 @@ public class ResponderBusqueda extends Thread {
           // nombre de la sala (tmb se ocupa cambiar luego como por el
           // nombre de usuario o algo asi) yy el puerto del servidor TCP
 
-          byte[] datos = respuesta.getBytes(); // Lo volvemos bytes
+          byte[] datos = respuesta.getBytes(Protocolo.CHARSET); // Lo volvemos bytes
 
           DatagramPacket paqueteRespuesta = new DatagramPacket(datos, datos.length, paquete.getAddress(),
               paquete.getPort()); // Enviamos el mensaje solo a quien nos mando la peticion

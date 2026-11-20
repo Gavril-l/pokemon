@@ -8,8 +8,10 @@ import java.io.ObjectOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Consumer;
 
 /**
  * Server
@@ -21,6 +23,7 @@ public class Server extends Thread {
   private volatile ResponderBusqueda responder;
   private String serverName;
   private Runnable onClienteConectado;
+  private Consumer<String> onError;
 
   public Server(String serverName) {
     this.serverName = serverName;
@@ -30,8 +33,23 @@ public class Server extends Thread {
     this.onClienteConectado = onClienteConectado;
   }
 
+  /**
+   Se llama (desde el hilo del servidor, no del de JavaFX) cuando el servidor no
+   pudo iniciar o se cayo. Usa Platform.runLater si vas a tocar la interfaz.
+   */
+  public void setOnError(Consumer<String> onError) {
+    this.onError = onError;
+  }
+
   public String getServerName() {
     return serverName;
+  }
+
+  private void reportarError(String mensaje) {
+    System.err.println(mensaje);
+    if (onError != null) {
+      onError.accept(mensaje);
+    }
   }
 
   @Override
@@ -80,16 +98,20 @@ public class Server extends Thread {
         }
 
       } catch (EOFException e) {
-        System.err.println("El cliente se desconecto" + e.getMessage());
+        System.err.println("El cliente se desconecto");
 
       } catch (ClassNotFoundException e) {
         if (running)
           e.printStackTrace();
       }
+    } catch (BindException e) {
+      // puerto TCP o UDP ocupado (otro servidor corriendo en esta misma maquina)
+      if (running)
+        reportarError("No se pudo iniciar la sala: el puerto ya esta en uso. " + e.getMessage());
     } catch (IOException e) {
       if (running) {
-        System.err.println("Error en el servidor: " + e.getMessage());
         e.printStackTrace();
+        reportarError("Error en el servidor: " + e.getMessage());
       }
     } finally {
       if (responder != null)
@@ -101,6 +123,8 @@ public class Server extends Thread {
   public void detener() {
     this.running = false;
     try {
+      if (responder != null)
+        responder.detener();
       if (serverSocket != null)
         serverSocket.close();
       if (socketCliente != null)
