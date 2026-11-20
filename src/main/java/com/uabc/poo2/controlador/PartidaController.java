@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
 import com.uabc.poo2.util.Utilidades;
+import com.uabc.poo2.vista.componentes.TarjetaPokemon;
+import com.uabc.poo2.modelo.Catalogo;
 
 public class PartidaController {
 
@@ -37,12 +39,13 @@ public class PartidaController {
       String rol = (servidor != null) ? "Host + Cliente conectado" : "Cliente conectado";
       lblEstado.setText("Estado: " + rol);
     }
+
   }
 
   @FXML
   void onVolverClick(ActionEvent event) {
     // al salir de la partida se cierra todo, si no los puertos 1234 (TCP) y
-    //  4445 (UDP) se quedan ocupados y no se puede volver a crear una sala.
+    // 4445 (UDP) se quedan ocupados y no se puede volver a crear una sala.
     if (cliente != null) {
       cliente.desconectar();
     }

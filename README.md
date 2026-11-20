@@ -7,7 +7,7 @@ Paquete base: `com.uabc.poo2`
 Requisitos
 ----------
 
-- JDK 25 o superior, con `JAVA_HOME` configurado
+- JDK 21 o superior, con `JAVA_HOME` configurado
 
 Verifica con:
 
