@@ -9,7 +9,7 @@ public class App extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    FXMLLoader loader = new FXMLLoader(App.class.getResource("principal.fxml"));
+    FXMLLoader loader = new FXMLLoader(App.class.getResource("inicio.fxml"));
     stage.setScene(new Scene(loader.load()));
     stage.setTitle("pokemon");
     stage.show();

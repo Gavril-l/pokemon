@@ -34,9 +34,9 @@ public class Server extends Thread {
   }
 
   /**
-   Se llama (desde el hilo del servidor, no del de JavaFX) cuando el servidor no
-   pudo iniciar o se cayo. Usa Platform.runLater si vas a tocar la interfaz.
-   */
+   * Se llama (desde el hilo del servidor, no del de JavaFX) cuando el servidor no
+   * pudo iniciar o se cayo. Usa Platform.runLater si vas a tocar la interfaz.
+   **/
   public void setOnError(Consumer<String> onError) {
     this.onError = onError;
   }
