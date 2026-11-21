@@ -13,6 +13,9 @@ public class Mensaje implements Serializable {
   private String remitente; // es el "quien manda el mensaje" (servidor o nombre del jugador)
   private String contenido; // texto plano o información general
   private Pokemon pokemon; // el objeto pokemon o pokémon que se esté tirando en la partida
+  private Pokemon pokemonOponente; // carta del rival para revelar cuando ambos elijan
+  private int rondasGanadas; // total de rondas ganadas acumuladas
+  private int victoriasMismoTipo; // mayor racha/conteo de victorias con el mismo tipo
 
   public Mensaje() {
   }
@@ -62,9 +65,33 @@ public class Mensaje implements Serializable {
     this.pokemon = pokemon;
   }
 
+  public Pokemon getPokemonOponente() {
+    return pokemonOponente;
+  }
+
+  public void setPokemonOponente(Pokemon pokemonOponente) {
+    this.pokemonOponente = pokemonOponente;
+  }
+
+  public int getRondasGanadas() {
+    return rondasGanadas;
+  }
+
+  public void setRondasGanadas(int rondasGanadas) {
+    this.rondasGanadas = rondasGanadas;
+  }
+
+  public int getVictoriasMismoTipo() {
+    return victoriasMismoTipo;
+  }
+
+  public void setVictoriasMismoTipo(int victoriasMismoTipo) {
+    this.victoriasMismoTipo = victoriasMismoTipo;
+  }
+
   @Override
   public String toString() {
     return "Mensaje [tipo=" + tipo + ", remitente=" + remitente + ", contenido=" + contenido + ", pokemon=" + pokemon
-        + "]";
+        + ", pokemonOponente=" + pokemonOponente + "]";
   }
 }

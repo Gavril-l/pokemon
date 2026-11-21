@@ -20,10 +20,12 @@ public class Server extends Thread {
   private volatile boolean running = true;
   private volatile ServerSocket serverSocket;
   private volatile Socket socketCliente;
+  private volatile ObjectOutputStream oosCliente;
   private volatile ResponderBusqueda responder;
   private String serverName;
   private Runnable onClienteConectado;
   private Consumer<String> onError;
+  private Consumer<Mensaje> onMensajeRecibido;
 
   public Server(String serverName) {
     this.serverName = serverName;
@@ -41,8 +43,26 @@ public class Server extends Thread {
     this.onError = onError;
   }
 
+  public void setOnMensajeRecibido(Consumer<Mensaje> onMensajeRecibido) {
+    this.onMensajeRecibido = onMensajeRecibido;
+  }
+
   public String getServerName() {
     return serverName;
+  }
+
+  public synchronized void enviarAlCliente(Mensaje mensaje) {
+    if (mensaje == null || oosCliente == null) {
+      return;
+    }
+    try {
+      oosCliente.writeObject(mensaje);
+      oosCliente.flush();
+    } catch (IOException e) {
+      if (running) {
+        System.err.println("Error al enviar mensaje al cliente: " + e.getMessage());
+      }
+    }
   }
 
   private void reportarError(String mensaje) {
@@ -74,6 +94,8 @@ public class Server extends Thread {
       try (
           ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
           ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream())) {
+        this.oosCliente = oos;
+
         // mensaje de bienvenida de prueba
         Mensaje bienvenida = new Mensaje(TipoDeMensaje.CONEXION_EXITOSA, "Servidor",
             "bienvenido a la partida de pokemon card-jitsu");
@@ -93,6 +115,10 @@ public class Server extends Thread {
 
             if (TipoDeMensaje.SELECCIONAR_CARTA.equals(mensajeRecibido.getTipo())) {
               System.out.println("el jugador tiro la carta: " + mensajeRecibido.getPokemon());
+            }
+
+            if (onMensajeRecibido != null) {
+              onMensajeRecibido.accept(mensajeRecibido);
             }
           }
         }
@@ -114,6 +140,7 @@ public class Server extends Thread {
         reportarError("Error en el servidor: " + e.getMessage());
       }
     } finally {
+      this.oosCliente = null;
       if (responder != null)
         responder.detener();
     }
@@ -122,6 +149,7 @@ public class Server extends Thread {
 
   public void detener() {
     this.running = false;
+    this.oosCliente = null;
     try {
       if (responder != null)
         responder.detener();

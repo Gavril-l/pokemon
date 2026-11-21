@@ -8,12 +8,49 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Cliente {
   private Socket socket;
   private ObjectOutputStream oos;
   private ObjectInputStream ois;
+  private volatile boolean escuchando = false;
+  private Thread hiloEscucha;
+  private Consumer<Mensaje> onMensajeRecibido;
   private volatile List<ServidorEncontrado> servidoresDisponibles = new ArrayList<>();
+
+  public void setOnMensajeRecibido(Consumer<Mensaje> onMensajeRecibido) {
+    this.onMensajeRecibido = onMensajeRecibido;
+  }
+
+  public void iniciarEscucha() {
+    if (escuchando || ois == null || socket == null || socket.isClosed()) {
+      return;
+    }
+    escuchando = true;
+    hiloEscucha = new Thread(() -> {
+      try {
+        while (escuchando && socket != null && !socket.isClosed()) {
+          Object obj = ois.readObject();
+          if (obj instanceof Mensaje mensaje && onMensajeRecibido != null) {
+            onMensajeRecibido.accept(mensaje);
+          }
+        }
+      } catch (EOFException | SocketException e) {
+        if (escuchando) {
+          System.out.println("Conexion cerrada durante la partida.");
+        }
+      } catch (IOException | ClassNotFoundException e) {
+        if (escuchando) {
+          e.printStackTrace();
+        }
+      } finally {
+        escuchando = false;
+      }
+    }, "Cliente-Escucha-Partida");
+    hiloEscucha.setDaemon(true);
+    hiloEscucha.start();
+  }
 
   public List<ServidorEncontrado> getServidoresDisponibles() {
     return servidoresDisponibles;
@@ -87,6 +124,7 @@ public class Cliente {
 
   // pa cerrar la conexión con el servidor
   public void desconectar() {
+    escuchando = false;
     try {
       if (socket != null && !socket.isClosed()) {
         socket.close();

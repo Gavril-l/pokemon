@@ -1,5 +1,7 @@
 package com.uabc.poo2.vista.componentes;
 
+import java.net.URL;
+
 import com.uabc.poo2.modelo.Pokemon;
 
 import javafx.geometry.Pos;
@@ -19,9 +21,8 @@ public class TarjetaPokemon extends VBox {
   private final Label lblName = new Label();
 
   public TarjetaPokemon() {
-    ivPokemon.setFitWidth(100);
+    ivPokemon.setFitWidth(140);
     ivPokemon.setPreserveRatio(true);
-
     getChildren().addAll(ivPokemon, lblName);
     setAlignment(Pos.CENTER);
   }
@@ -33,17 +34,40 @@ public class TarjetaPokemon extends VBox {
     // getStyleClass().add("tarjeta-pokemon");
   }
 
+  public void setTamanoImagen(double ancho, double alto, boolean conservarProporcion) {
+    ivPokemon.setFitWidth(ancho);
+    if (alto > 0) {
+      ivPokemon.setFitHeight(alto);
+    }
+    ivPokemon.setPreserveRatio(conservarProporcion);
+  }
+  //Si prefieres que rellene exactamente el alto y ancho sin dejar márgenes aunque cambie la proporción
+    // cambia true por false en setTamanoImagen(ancho, alto, false)
+  public void setMostrarNombre(boolean mostrar) {
+    lblName.setVisible(mostrar);
+    lblName.setManaged(mostrar);
+  }
+
+  public Pokemon getPokemon() {
+    return pokemon;
+  }
+
   public void setPokemon(Pokemon pokemon) {
+    this.pokemon = pokemon;
     if (pokemon == null) {
       lblName.setText("Nombre");
       ivPokemon.setImage(null);
       return;
     }
     lblName.setText(pokemon.getNombre());
-    String ruta = RUTA_IMAGENES + pokemon.getRutaImagen(); // o la ruta del css
+    String ruta = RUTA_IMAGENES + pokemon.getRutaImagen();
     System.out.println("Buscando: " + ruta);
-    System.out.println("Resultado: " + getClass().getResource(ruta));
-    ivPokemon.setImage(new Image(getClass().getResource(RUTA_IMAGENES + pokemon.getRutaImagen()).toExternalForm()));
+    URL recurso = getClass().getResource(ruta);
+    System.out.println("Resultado: " + recurso);
+    if (recurso != null) {
+      ivPokemon.setImage(new Image(recurso.toExternalForm()));
+    } else {
+      ivPokemon.setImage(null);
+    }
   }
-
 }
