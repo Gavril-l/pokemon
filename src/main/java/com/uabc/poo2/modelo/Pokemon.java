@@ -72,21 +72,21 @@ public class Pokemon implements Serializable {
     this.rutaImagen = rutaImagen;
   }
 
-public Efectividad relacionCon(Tipo atacante) {
-  if (this.tipo == null || atacante == null) {
+  public Efectividad relacionCon(Tipo atacante) {
+    if (this.tipo == null || atacante == null) {
+      return Efectividad.NEUTRAL;
+    }
+    if (tipo.getResistencias().contains(atacante))
+      return Efectividad.RESISTE;
+
+    if (tipo.getDebilidades().contains(atacante))
+      return Efectividad.DEBIL;
+
+    if (tipo.getInmunidades().contains(atacante))
+      return Efectividad.INMUNE;
+
     return Efectividad.NEUTRAL;
   }
-  if (tipo.getResistencias().contains(atacante))
-    return Efectividad.RESISTE;
-
-  if (tipo.getDebilidades().contains(atacante))
-    return Efectividad.DEBIL;
-
-  if (tipo.getInmunidades().contains(atacante))
-    return Efectividad.INMUNE;
-
-  return Efectividad.NEUTRAL;
-}
 
   @Override
   public String toString() {

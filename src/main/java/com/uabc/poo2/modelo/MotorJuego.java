@@ -31,7 +31,7 @@ public class MotorJuego {
     return mano;
   }
 
-    public void usarYReponerCarta(List<Pokemon> mano, Pokemon jugada) {
+  public void usarYReponerCarta(List<Pokemon> mano, Pokemon jugada) {
     if (mano == null || jugada == null) {
       return;
     }
@@ -65,12 +65,16 @@ public class MotorJuego {
 
   /**
    * Evalua el enfrentamiento entre carta1 (jugador 1) y carta2 (jugador 2).
-   * Revisa relaciones de tipo (INMUNE, RESISTE, DEBIL, NEUTRAL) y desempata por valor.
+   * Revisa relaciones de tipo (INMUNE, RESISTE, DEBIL, NEUTRAL) y desempata por
+   * valor.
    */
   public ResultadoRonda resolverRonda(Pokemon carta1, Pokemon carta2) {
-    if (carta1 == null && carta2 == null) return ResultadoRonda.EMPATE;
-    if (carta1 == null) return ResultadoRonda.GANA_JUGADOR_2;
-    if (carta2 == null) return ResultadoRonda.GANA_JUGADOR_1;
+    if (carta1 == null && carta2 == null)
+      return ResultadoRonda.EMPATE;
+    if (carta1 == null)
+      return ResultadoRonda.GANA_JUGADOR_2;
+    if (carta2 == null)
+      return ResultadoRonda.GANA_JUGADOR_1;
 
     Efectividad rel1 = carta1.relacionCon(carta2.getTipo());
     Efectividad rel2 = carta2.relacionCon(carta1.getTipo());
@@ -105,7 +109,8 @@ public class MotorJuego {
   }
 
   private int puntajeEfectividad(Efectividad ef) {
-    if (ef == null) return 0;
+    if (ef == null)
+      return 0;
     return switch (ef) {
       case RESISTE -> 1;
       case NEUTRAL -> 0;

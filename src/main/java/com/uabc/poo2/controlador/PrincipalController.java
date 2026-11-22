@@ -62,4 +62,9 @@ public class PrincipalController {
     }
     Platform.exit();
   }
+
+  @FXML
+  void handleCatalogo(ActionEvent event) {
+    Utilidades.cambiarPantalla(event, "Catalogo", "catalogo.fxml");
+  }
 }
