@@ -2,6 +2,7 @@ package com.uabc.poo2.audio;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 /**
  * Musica
@@ -21,17 +22,25 @@ public class Musica {
   };
 
   public static void reproducir(Pista pista) {
+    MediaPlayer nuevo;
 
-    MediaPlayer nuevo = switch (pista) {
-      case MENU -> menu;
-      case PARTIDA -> partida;
-    };
+    switch (pista) {
+      case MENU:
+        nuevo = menu;
+        nuevo.setStopTime(Duration.seconds(63.5));
+        break;
+      case PARTIDA:
+        nuevo = partida;
+        break;
+      default:
+        nuevo = null;
+    }
+    ;
 
     if (nuevo == actual)
       return;
 
-    if (actual != null)
-      actual.pause();
+    detener();
 
     actual = nuevo;
 
