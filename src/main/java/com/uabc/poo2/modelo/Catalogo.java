@@ -21,15 +21,13 @@ public class Catalogo {
     agregar(new Pokemon("013", "Weedle", Tipo.BICHO, 2, "naranja", "Weedle" + EXT));
     agregar(new Pokemon("014", "Kakuna", Tipo.BICHO, 4, "amarillo", "Kakuna" + EXT));
     agregar(new Pokemon("015", "Beedrill", Tipo.BICHO, 7, "amarillo", "Beedrill" + EXT));
-    agregar(new Pokemon("046", "Paras", Tipo.PLANTA, 3, "naranja", "Paras" + EXT));
-    agregar(new Pokemon("047", "Parasect", Tipo.PLANTA, 6, "rojo", "Parasect" + EXT));
-    agregar(new Pokemon("048", "Venonat", Tipo.VENENO, 4, "morado", "Venonat" + EXT));
-    agregar(new Pokemon("049", "Venomoth", Tipo.VENENO, 7, "morado", "Venomoth" + EXT));
+    agregar(new Pokemon("046", "Paras", Tipo.BICHO, 3, "naranja", "Paras" + EXT));
+    agregar(new Pokemon("047", "Parasect", Tipo.BICHO, 6, "rojo", "Parasect" + EXT));
 
     // Planta
     agregar(new Pokemon("001", "Bulbasaur", Tipo.PLANTA, 3, "verde", "Bulbasaur" + EXT));
     agregar(new Pokemon("002", "Ivysaur", Tipo.PLANTA, 6, "verde", "Ivysaur" + EXT));
-    agregar(new Pokemon("003", "Venusaur", Tipo.PLANTA, 9, "verde", "Venusaur" + EXT));
+    agregar(new Pokemon("003", "Venusaur", Tipo.PLANTA, 10, "verde", "Venusaur" + EXT));
     agregar(new Pokemon("043", "Oddish", Tipo.PLANTA, 3, "azul", "Oddish" + EXT));
     agregar(new Pokemon("044", "Gloom", Tipo.PLANTA, 6, "azul", "Gloom" + EXT));
     agregar(new Pokemon("045", "Vileplume", Tipo.PLANTA, 9, "rojo", "Vileplume" + EXT));
@@ -61,6 +59,8 @@ public class Catalogo {
     agregar(new Pokemon("034", "Nidoking", Tipo.VENENO, 9, "morado", "Nidoking" + EXT));
     agregar(new Pokemon("041", "Zubat", Tipo.VENENO, 3, "azul", "Zubat" + EXT));
     agregar(new Pokemon("042", "Golbat", Tipo.VENENO, 6, "azul", "Golbat" + EXT));
+    agregar(new Pokemon("048", "Venonat", Tipo.VENENO, 4, "morado", "Venonat" + EXT));
+    agregar(new Pokemon("049", "Venomoth", Tipo.VENENO, 7, "morado", "Venomoth" + EXT));
 
     // Tierra
     agregar(new Pokemon("027", "Sandshrew", Tipo.TIERRA, 4, "amarillo", "Sandshrew" + EXT));
@@ -68,17 +68,25 @@ public class Catalogo {
     agregar(new Pokemon("050", "Diglett", Tipo.TIERRA, 3, "cafe", "Diglett" + EXT));
 
     // Normal
-    agregar(new Pokemon("016", "Pidgey", Tipo.NORMAL, 2, "cafe", "Pidgey" + EXT));
-    agregar(new Pokemon("017", "Pidgeotto", Tipo.NORMAL, 5, "cafe", "Pidgeotto" + EXT));
-    agregar(new Pokemon("018", "Pidgeot", Tipo.NORMAL, 8, "cafe", "Pidgeot" + EXT));
     agregar(new Pokemon("019", "Rattata", Tipo.NORMAL, 2, "morado", "Rattata" + EXT));
     agregar(new Pokemon("020", "Raticate", Tipo.NORMAL, 5, "cafe", "Raticate" + EXT));
-    agregar(new Pokemon("021", "Spearow", Tipo.NORMAL, 3, "cafe", "Spearow" + EXT));
-    agregar(new Pokemon("022", "Fearow", Tipo.NORMAL, 6, "cafe", "Fearow" + EXT));
     agregar(new Pokemon("035", "Clefairy", Tipo.NORMAL, 4, "rosa", "Clefairy" + EXT));
-    agregar(new Pokemon("036", "Clefable", Tipo.NORMAL, 7, "rosa", "Clefable" + EXT));
     agregar(new Pokemon("039", "Jigglypuff", Tipo.NORMAL, 4, "rosa", "Jigglypuff" + EXT));
+
+    // Volador
+    agregar(new Pokemon("016", "Pidgey", Tipo.VOLADOR, 2, "cafe", "Pidgey" + EXT));
+    agregar(new Pokemon("017", "Pidgeotto", Tipo.VOLADOR, 5, "cafe", "Pidgeotto" + EXT));
+    agregar(new Pokemon("018", "Pidgeot", Tipo.VOLADOR, 8, "cafe", "Pidgeot" + EXT));
+    agregar(new Pokemon("021", "Spearow", Tipo.VOLADOR, 3, "cafe", "Spearow" + EXT));
+    agregar(new Pokemon("022", "Fearow", Tipo.VOLADOR, 6, "cafe", "Fearow" + EXT));
+
+    // Dragon
+    agregar(new Pokemon("6767", "ZamanoMon", Tipo.VOLADOR, 67, "negro", "ZamanoMon" + EXT));
+
+    // Hada
+    agregar(new Pokemon("036", "Clefable", Tipo.NORMAL, 7, "rosa", "Clefable" + EXT));
     agregar(new Pokemon("040", "Wigglytuff", Tipo.NORMAL, 7, "rosa", "Wigglytuff" + EXT));
+
   }
 
   public static Pokemon buscar(String id) {
