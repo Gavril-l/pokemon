@@ -1,7 +1,11 @@
 target/
+datos/
 .idea/
 .vscode/
 *.iml
 .classpath
 .project
 .settings/
+
+datos/Perfiles.db4o
+datos
