@@ -45,6 +45,7 @@ public class InicioController implements Initializable {
     }
 
     vbPrincipal.getChildren().add(crearTarjeta(null));
+    repositorio.cerrar();
   }
 
   private TarjetaPerfil crearTarjeta(Perfil existente) {
@@ -52,23 +53,26 @@ public class InicioController implements Initializable {
 
     if (existente != null) {
       tarjeta.setAlEntrar((perfil, texto) -> {
-        Perfil ok = repositorio.autentificar(perfil.getNombre(), texto); // texto plano: el repositorio ya hashea
+        Perfil ok = RepositorioPerfiles.getInstancia().autentificar(perfil.getNombre(), texto);
         if (ok == null) {
           tarjeta.mostrarError("Contraseña incorrecta");
           return;
         }
+        RepositorioPerfiles.getInstancia().cerrar();
         Sesion.iniciar(ok);
         Utilidades.cambiarPantalla(tarjeta, "Pokemon Card-Jitsu", "principal.fxml");
       });
     } else {
       tarjeta.setAlCrear((usuario, contrasena) -> {
-        if (!repositorio.busqueda(usuario).isEmpty()) { // la lista vacía es lo normal: nombre libre
+        if (RepositorioPerfiles.getInstancia().busqueda(usuario).isEmpty()) { // la lista vacía es lo normal: nombre
+                                                                              // libre
           tarjeta.mostrarError("Usuario en uso");
           return;
         }
 
         Perfil nuevo = new Perfil(usuario, Passwords.generarHash(contrasena)); // se guarda el hash
-        repositorio.agregarUsuario(nuevo); // ya muestra la alerta de éxito o de error
+        RepositorioPerfiles.getInstancia().agregarUsuario(nuevo); // ya muestra la alerta de éxito o de error
+        RepositorioPerfiles.getInstancia().cerrar();
         Sesion.iniciar(nuevo);
         Utilidades.cambiarPantalla(tarjeta, "Pokemon Card-Jitsu", "principal.fxml");
       });
