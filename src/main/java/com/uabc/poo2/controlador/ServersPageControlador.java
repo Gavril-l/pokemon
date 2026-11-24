@@ -78,6 +78,11 @@ public class ServersPageControlador implements Initializable {
     // Si el servidor no puede iniciar (puerto ocupado, etc.) se avisa y se
     // rehabilita el boton
     servidor.setOnError(mensaje -> Platform.runLater(() -> {
+      // si ya estamos en la partida este error (por ejemplo el rival cerro el juego) no
+      // debe mostrar la alerta de "sala" ni tocar los controles de esta pantalla
+      if (transicionandoAPartida) {
+        return;
+      }
       Utilidades.alertar("Error de sala", mensaje, Alert.AlertType.ERROR);
       servidor = null;
       btnIniciarServidor.setDisable(false);

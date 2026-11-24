@@ -5,11 +5,15 @@ import com.uabc.poo2.audio.Musica.Pista;
 import com.uabc.poo2.modelo.MotorJuego;
 import com.uabc.poo2.modelo.MotorJuego.EstadoJugador;
 import com.uabc.poo2.modelo.MotorJuego.ResultadoRonda;
+import com.uabc.poo2.modelo.Perfil;
 import com.uabc.poo2.modelo.Pokemon;
+import com.uabc.poo2.persistencia.BaseDeDatosException;
+import com.uabc.poo2.persistencia.RepositorioPerfiles;
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
 import com.uabc.poo2.red.protocolo.Mensaje;
 import com.uabc.poo2.red.protocolo.TipoDeMensaje;
+import com.uabc.poo2.sesion.Sesion;
 import com.uabc.poo2.util.Utilidades;
 import com.uabc.poo2.vista.componentes.TarjetaPokemon;
 
@@ -32,10 +36,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
@@ -50,12 +59,16 @@ public class PartidaController implements Initializable {
   private static final double SEPARACION_MANO = 14;
   private static final double SEPARACION_CENTRO = 60;
 
-  //para calcular la escala segun el tamaño de la ventana:
-  //lo que ocupa la pantalla sin contar las cartas (titulos, botones, margenes)...
+  // Ajuste fino (en px a escala 1.0) para mover el contenido del tablero sin afectar el fondo
+  private static final double DESPLAZAMIENTO_X = -20;
+  private static final double DESPLAZAMIENTO_Y = 15;
+
+  // para calcular la escala segun el tamaño de la ventana:
+  // lo que ocupa la pantalla sin contar las cartas (titulos, botones, margenes)
   private static final double ALTO_SIN_CARTAS = 190;
-  //lo que ocupan las cartas a escala 1.0 (carta del centro + mano + titulos)...
+  // lo que ocupan las cartas a escala 1.0 (carta del centro + mano + titulos)
   private static final double ALTO_CARTAS_BASE = (ANCHO_CARTA_CENTRO + ANCHO_CARTA_MANO) * PROPORCION_CARTA + 60;
-  //y lo que mide la mano de 5 cartas a escala 1.0 (con margenes)
+  // y lo que mide la mano de 5 cartas a escala 1.0 (con margenes)
   private static final double ANCHO_MANO_BASE = 5 * ANCHO_CARTA_MANO + 4 * SEPARACION_MANO + 40;
   private static final double ESCALA_MIN = 0.5;
   private static final double ESCALA_MAX = 2.2;
@@ -123,22 +136,67 @@ public class PartidaController implements Initializable {
   private int segundosRestantes = SEGUNDOS_POR_RONDA;
   private Timeline cronometro;
   private boolean partidaTerminada;
+  private boolean resultadoGuardado;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     Musica.reproducir(Pista.PARTIDA);
+    configurarFondo();
     configurarEscala();
   }
 
-  //todo el tablero depende de la escala, y la escala del tamaño de la ventana
-  //al agrandar o achicar la ventana las cartas, los espacios y las letras se
-  //ajustan solos y se quedan en su lugar.
+  private void configurarFondo() {
+    if (raiz == null) {
+      return;
+    }
+
+    URL url = getClass().getResource("/com/uabc/poo2/vista/imagenes/Batalla.jpeg");
+    if (url == null) {
+      System.err.println("No se encontró Batalla.jpeg en /com/uabc/poo2/vista/imagenes/");
+      return;
+    }
+
+    Image imagen = new Image(url.toExternalForm());
+    ImageView fondo = new ImageView(imagen);
+    fondo.setPreserveRatio(false);
+    fondo.setMouseTransparent(true);
+
+    raiz.sceneProperty().addListener((obs, oldScene, newScene) -> {
+      if (newScene != null && !(raiz.getParent() instanceof StackPane)) {
+        Parent padre = raiz.getParent();
+        StackPane contenedorFondo = new StackPane(fondo);
+        contenedorFondo.setMouseTransparent(true);
+
+        fondo.fitWidthProperty().bind(newScene.widthProperty());
+        fondo.fitHeightProperty().bind(newScene.heightProperty());
+
+        StackPane envoltorio = new StackPane(contenedorFondo, raiz);
+        raiz.setStyle("-fx-background-color: transparent;");
+
+        if (padre == null || newScene.getRoot() == raiz) {
+          newScene.setRoot(envoltorio);
+        } else if (padre instanceof Pane panePadre) {
+          int idx = panePadre.getChildren().indexOf(raiz);
+          if (idx >= 0) {
+            panePadre.getChildren().set(idx, envoltorio);
+          }
+        }
+      }
+    });
+  }
+
+  // todo el tablero depende de la escala, y la escala del tamaño de la ventana
+  // al agrandar o achicar la ventana las cartas, los espacios y las letras se
+  // ajustan solos y se quedan en su lugar.
   private void configurarEscala() {
     escala.bind(Bindings.createDoubleBinding(() -> {
       double porAlto = (raiz.getHeight() - ALTO_SIN_CARTAS) / ALTO_CARTAS_BASE;
       double porAncho = raiz.getWidth() / ANCHO_MANO_BASE;
       return Math.max(ESCALA_MIN, Math.min(ESCALA_MAX, Math.min(porAlto, porAncho)));
     }, raiz.widthProperty(), raiz.heightProperty()));
+
+    raiz.translateXProperty().bind(escala.multiply(DESPLAZAMIENTO_X));
+    raiz.translateYProperty().bind(escala.multiply(DESPLAZAMIENTO_Y));
 
     // las letras crecen menos que las cartas para que no se vean desproporcionadas
     escalaFuente.bind(Bindings.createDoubleBinding(
@@ -153,13 +211,13 @@ public class PartidaController implements Initializable {
     ligarTamanoContenedor(contenedorCartaLocal);
     ligarTamanoContenedor(contenedorCartaOponente);
 
-    ligarFuente(lblSala, 16, true);
-    ligarFuente(lblCronometro, 16, true);
-    ligarFuente(lblEstado, 14, false);
-    ligarFuente(lblMarcadorLocal, 13, false);
-    ligarFuente(lblMarcadorOponente, 13, false);
-    ligarFuente(lblTituloLocal, 14, true);
-    ligarFuente(lblTituloOponente, 14, true);
+    ligarFuente(lblSala, 16, true, false);
+    ligarFuente(lblCronometro, 16, true, false);
+    ligarFuente(lblEstado, 14, false, false);
+    ligarFuente(lblMarcadorLocal, 13, false, true);
+    ligarFuente(lblMarcadorOponente, 13, false, true);
+    ligarFuente(lblTituloLocal, 14, true, true);
+    ligarFuente(lblTituloOponente, 14, true, true);
   }
 
   private void ligarTamanoContenedor(StackPane contenedor) {
@@ -172,8 +230,10 @@ public class PartidaController implements Initializable {
     contenedor.maxHeightProperty().bind(alto);
   }
 
-  private void ligarFuente(Label etiqueta, double tamanoBase, boolean negrita) {
-    String formato = "-fx-font-size: %.1fpx;" + (negrita ? " -fx-font-weight: bold;" : "");
+  private void ligarFuente(Label etiqueta, double tamanoBase, boolean negrita, boolean blanco) {
+    String formato = "-fx-font-size: %.1fpx;"
+        + (negrita ? " -fx-font-weight: bold;" : "")
+        + (blanco ? " -fx-text-fill: white;" : "");
     etiqueta.styleProperty().bind(escalaFuente.multiply(tamanoBase).asString(Locale.US, formato));
   }
 
@@ -181,7 +241,14 @@ public class PartidaController implements Initializable {
     this.cliente = cliente;
     this.servidor = servidor;
     this.nombreSala = nombreSala;
-    this.nombreJugador = (servidor != null) ? "Host" : "Jugador";
+    this.resultadoGuardado = false;
+
+    String nombreSesion = Sesion.hayPerfil() ? Sesion.getPerfil().getNombre() : null;
+    if (nombreSesion != null && !nombreSesion.isBlank()) {
+      this.nombreJugador = nombreSesion;
+    } else {
+      this.nombreJugador = (servidor != null) ? "Host" : "Jugador";
+    }
     this.nombreOponente = (servidor != null) ? "Cliente" : "Host";
 
     if (lblSala != null) {
@@ -286,11 +353,19 @@ public class PartidaController implements Initializable {
         }
         case INICIO_RONDA -> iniciarNuevaRonda();
         case FIN_PARTIDA -> {
+          if (partidaTerminada) {
+            return;
+          }
           partidaTerminada = true;
           detenerCronometro();
           setManoHabilitada(false);
-          if (lblEstado != null && mensaje.getContenido() != null) {
-            lblEstado.setText(mensaje.getContenido());
+          // en FIN_PARTIDA el remitente siempre es el nombre del GANADOR
+          String ganador = mensaje.getRemitente();
+          boolean ganoLocal = ganador != null && ganador.equals(nombreJugador);
+          guardarResultadoPartida(ganoLocal);
+          if (lblEstado != null) {
+            lblEstado.setText(ganoLocal ? "¡Victoria de " + nombreJugador + "!"
+                : "Derrota: " + (ganador != null ? ganador : nombreOponente) + " gano la partida.");
           }
         }
         default -> {
@@ -330,6 +405,7 @@ public class PartidaController implements Initializable {
 
     if (estadoLocal.haGanadoPartida()) {
       partidaTerminada = true;
+      guardarResultadoPartida(true);
       String mensajeFinal = "¡Victoria de " + nombreJugador + "! " + resumen;
       if (lblEstado != null) {
         lblEstado.setText(mensajeFinal);
@@ -343,6 +419,7 @@ public class PartidaController implements Initializable {
 
     if (estadoOponente.haGanadoPartida()) {
       partidaTerminada = true;
+      guardarResultadoPartida(false);
       String mensajeFinal = "Derrota: " + nombreOponente + " gano la partida. " + resumen;
       if (lblEstado != null) {
         lblEstado.setText(mensajeFinal);
@@ -361,6 +438,36 @@ public class PartidaController implements Initializable {
     Timeline pausaSiguienteRonda = new Timeline(new KeyFrame(Duration.seconds(3), e -> iniciarNuevaRonda()));
     pausaSiguienteRonda.setCycleCount(1);
     pausaSiguienteRonda.play();
+  }
+
+  private void guardarResultadoPartida(boolean ganoLocal) {
+    if (resultadoGuardado || !Sesion.hayPerfil()) {
+      return;
+    }
+    resultadoGuardado = true;
+
+    final String nombre = Sesion.getPerfil().getNombre();
+    final String rival = nombreOponente;
+
+    Perfil perfilSesion = Sesion.getPerfil();
+    if (ganoLocal) {
+      perfilSesion.registrarVictoriaEnPartida(rival);
+    } else {
+      perfilSesion.registrarDerrotaEnPartida(rival);
+    }
+
+    Thread hilo = new Thread(() -> {
+      try {
+        Perfil actualizado = RepositorioPerfiles.getInstancia().registrarResultado(nombre, ganoLocal, rival);
+        Sesion.iniciar(actualizado);
+      } catch (BaseDeDatosException e) {
+        e.printStackTrace();
+        // runLater: aqui no estamos en el hilo de JavaFX
+        Platform.runLater(() -> Utilidades.alertar("Error en base de datos",
+            "No se pudo guardar el resultado de la partida: " + e.getMessage(), Alert.AlertType.ERROR));
+      }
+    }, "Guardar-Resultado");
+    hilo.start();
   }
 
   private void renderizarMano() {
@@ -383,8 +490,8 @@ public class PartidaController implements Initializable {
     }
   }
 
-  //la carta mide lo que diga "ancho" que sigue a la ventana y el alto sale de
-  //la proporcion, asi la imagen no se deforma ni se pierde calidad
+  // la carta mide lo que diga "ancho" que sigue a la ventana y el alto sale de
+  // la proporcion, asi la imagen no se deforma ni se pierde calidad
   private Node crearVistaCarta(Pokemon carta, DoubleProperty ancho) {
     TarjetaPokemon tarjeta = new TarjetaPokemon(carta, TarjetaPokemon.RESOLUCION_ALTA);
     tarjeta.setMostrarNombre(false);

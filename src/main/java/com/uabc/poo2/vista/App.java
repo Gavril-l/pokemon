@@ -1,6 +1,7 @@
 package com.uabc.poo2.vista;
 
 import com.uabc.poo2.audio.Musica;
+import com.uabc.poo2.persistencia.RepositorioPerfiles;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ public class App extends Application {
     FXMLLoader loader = new FXMLLoader(App.class.getResource("inicio.fxml"));
     stage.setScene(new Scene(loader.load()));
     stage.setTitle("pokemon");
+    stage.setMaximized(true);
     stage.show();
   }
 
@@ -25,5 +27,6 @@ public class App extends Application {
   @Override
   public void stop() throws Exception {
     Musica.detener();
+    RepositorioPerfiles.cerrarSiExiste();
   }
 }

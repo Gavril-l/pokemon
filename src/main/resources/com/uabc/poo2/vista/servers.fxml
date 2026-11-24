@@ -12,24 +12,18 @@
 
 <BorderPane minHeight="400.0" minWidth="640.0" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uabc.poo2.controlador.ServersPageControlador">
    <top>
-      <BorderPane BorderPane.alignment="CENTER">
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-         <left>
-            <Button fx:id="btnRegresar" mnemonicParsing="false" onAction="#onRegresarClick" text="Regresar" BorderPane.alignment="CENTER" />
-         </left>
-         <center>
-            <Label text="MatchMaking" textFill="#2c3e50" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="MatchMaking" textFill="#2c3e50">
                <font>
                   <Font name="System Bold" size="26.0" />
                </font>
             </Label>
-         </center>
-         <right>
-            <HBox prefWidth="75.0" />
-         </right>
-      </BorderPane>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+         </padding>
+      </HBox>
    </top>
    <center>
       <HBox spacing="10.0" BorderPane.alignment="CENTER">
@@ -58,6 +52,7 @@
                      <children>
                         <Button fx:id="btnIniciarServidor" mnemonicParsing="false" onAction="#onIniciarServidorClick" text="Iniciar sala" />
                         <TextField fx:id="txtSala" maxWidth="1.7976931348623157E308" promptText="Nombre de sala" />
+                        <Button fx:id="btnRegresar" mnemonicParsing="false" onAction="#onRegresarClick" text="Regresar" />
                      </children>
                      <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

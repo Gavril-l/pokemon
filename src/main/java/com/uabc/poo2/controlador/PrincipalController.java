@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 
 import com.uabc.poo2.red.Cliente;
@@ -49,7 +48,7 @@ public class PrincipalController {
 
   @FXML
   void handleEstadisticas(ActionEvent event) {
-    Utilidades.alertar("Estadísticas", "Sección de estadísticas en construcción.", Alert.AlertType.INFORMATION);
+    Utilidades.cambiarPantalla(event, "Estadísticas - Pokémon Card-Jitsu", "estadisticas.fxml");
   }
 
   @FXML

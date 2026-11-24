@@ -110,7 +110,7 @@ public class TarjetaPerfil extends HBox implements Initializable {
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    setStyle("-fx-background-color: ffffff");
+    setStyle("-fx-background-color: #ffffff");
     setModo(Modo.NORMAL);
     setOnMouseClicked(e -> {
       if (modoActual == Modo.NORMAL)
@@ -155,7 +155,6 @@ public class TarjetaPerfil extends HBox implements Initializable {
   void onCrearPerfilAction(ActionEvent event) {
     String nombre = txtIngresarNombre.getText().trim();
     String contrasena = pfNuevaContraseña.getText();
-    System.out.println("HOLAAA");
     if (nombre.isEmpty()) {
       mostrarError("Escribe un nombre de usuario");
       return;
