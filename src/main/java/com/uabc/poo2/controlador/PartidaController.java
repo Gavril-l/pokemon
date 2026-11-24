@@ -1,5 +1,7 @@
 package com.uabc.poo2.controlador;
 
+import com.uabc.poo2.audio.Musica;
+import com.uabc.poo2.audio.Musica.Pista;
 import com.uabc.poo2.modelo.MotorJuego;
 import com.uabc.poo2.modelo.MotorJuego.EstadoJugador;
 import com.uabc.poo2.modelo.MotorJuego.ResultadoRonda;
@@ -10,14 +12,19 @@ import com.uabc.poo2.red.protocolo.Mensaje;
 import com.uabc.poo2.red.protocolo.TipoDeMensaje;
 import com.uabc.poo2.util.Utilidades;
 import com.uabc.poo2.vista.componentes.TarjetaPokemon;
+
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -31,7 +38,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
-public class PartidaController {
+public class PartidaController implements Initializable {
 
   private static final int SEGUNDOS_POR_RONDA = 20;
   private static final double ANCHO_CARTA_MANO = 135;
@@ -74,6 +81,11 @@ public class PartidaController {
   private int segundosRestantes = SEGUNDOS_POR_RONDA;
   private Timeline cronometro;
   private boolean partidaTerminada;
+
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    Musica.reproducir(Pista.PARTIDA);
+  }
 
   public void inicializarPartida(Cliente cliente, Server servidor, String nombreSala) {
     this.cliente = cliente;
@@ -274,7 +286,8 @@ public class PartidaController {
       resumen = "Ronda empatada. Nadie suma victoria.";
     }
 
-    // Reemplaza la carta jugada en su misma posicion y refresca la mano al cerrar la ronda
+    // Reemplaza la carta jugada en su misma posicion y refresca la mano al cerrar
+    // la ronda
     motor.usarYReponerCarta(manoJugador, cartaElegidaLocal);
     renderizarMano();
     actualizarMarcadores();
