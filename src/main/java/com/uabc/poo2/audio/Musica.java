@@ -19,6 +19,8 @@ public class Musica {
   public static void iniciar() {
     Media lobby = new Media(Musica.class.getResource("lobby.wav").toExternalForm());
     menu = new MediaPlayer(lobby);
+    Media batalla = new Media(Musica.class.getResource("PokemonBatalla.wav").toExternalForm());
+    partida = new MediaPlayer(batalla);
   };
 
   public static void reproducir(Pista pista) {
@@ -27,7 +29,7 @@ public class Musica {
     switch (pista) {
       case MENU:
         nuevo = menu;
-        nuevo.setStopTime(Duration.seconds(63.5));
+        nuevo.setStopTime(Duration.seconds(63.943));
         break;
       case PARTIDA:
         nuevo = partida;

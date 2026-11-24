@@ -2,56 +2,79 @@ package com.uabc.poo2.controlador;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.TextField;
 
+import com.uabc.poo2.util.Passwords;
 import com.uabc.poo2.util.Utilidades;
 import com.uabc.poo2.sesion.Sesion;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import com.uabc.poo2.modelo.Perfil;
 import com.uabc.poo2.persistencia.RepositorioPerfiles;
+import com.uabc.poo2.vista.componentes.TarjetaPerfil;
 
-public class InicioController {
+public class InicioController implements Initializable {
 
-  RepositorioPerfiles perfiles = RepositorioPerfiles.getInstancia();
-
-  @FXML
-  private Button btnEntrar;
+  RepositorioPerfiles repositorio;
 
   @FXML
-  private Button btnRegistro;
+  private VBox vbPrincipal;
 
   @FXML
-  private TextField txtContraseña;
+  private FlowPane fpPerfiles;
 
   @FXML
-  private TextField txtUsuario;
+  private ScrollPane spPerfiles;
 
-  // La neta hice el registro todo rapido (disculpa), esta medio x pero bueno
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
 
-  @FXML
-  void onEntrarClick(ActionEvent event) {
+    repositorio = RepositorioPerfiles.getInstancia();
+    spPerfiles.setFitToWidth(true);
 
-    if (txtUsuario.getText().isBlank() || txtContraseña.getText().isBlank()) {
-      Utilidades.alertar("Error de inicio", "Nombre de usuario y contraseña son obligatorios", AlertType.WARNING);
-      return;
+    for (Perfil p : repositorio.listar()) {
+      vbPrincipal.getChildren().add(crearTarjeta(p));
     }
 
-    Perfil perfil = perfiles.autentificar(txtUsuario.getText(), txtContraseña.getText());
-
-    if (perfil == null) {
-      Utilidades.alertar("Base de datos", "Usuario o contraseña incorrectos", AlertType.ERROR);
-      return;
-    }
-
-    Sesion.iniciar(perfil);
-    perfiles.cerrar();
-    Utilidades.cambiarPantalla(event, "Pokemon Card-Jitsu", "principal.fxml");
+    vbPrincipal.getChildren().add(crearTarjeta(null));
   }
 
-  @FXML
-  void onRegistroClick(ActionEvent event) {
-    // Esto va a mandar a otra pantalla de registro o asi
+  private TarjetaPerfil crearTarjeta(Perfil existente) {
+    TarjetaPerfil tarjeta = new TarjetaPerfil(existente);
+
+    if (existente != null) {
+      tarjeta.setAlEntrar((perfil, texto) -> {
+        Perfil ok = repositorio.autentificar(perfil.getNombre(), texto); // texto plano: el repositorio ya hashea
+        if (ok == null) {
+          tarjeta.mostrarError("Contraseña incorrecta");
+          return;
+        }
+        Sesion.iniciar(ok);
+        Utilidades.cambiarPantalla(tarjeta, "Pokemon Card-Jitsu", "principal.fxml");
+      });
+    } else {
+      tarjeta.setAlCrear((usuario, contrasena) -> {
+        if (!repositorio.busqueda(usuario).isEmpty()) { // la lista vacía es lo normal: nombre libre
+          tarjeta.mostrarError("Usuario en uso");
+          return;
+        }
+
+        Perfil nuevo = new Perfil(usuario, Passwords.generarHash(contrasena)); // se guarda el hash
+        repositorio.agregarUsuario(nuevo); // ya muestra la alerta de éxito o de error
+        Sesion.iniciar(nuevo);
+        Utilidades.cambiarPantalla(tarjeta, "Pokemon Card-Jitsu", "principal.fxml");
+      });
+    }
+
+    return tarjeta;
   }
 
 }

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,13 +13,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import com.uabc.poo2.audio.Musica;
+import com.uabc.poo2.audio.Musica.Pista;
 import com.uabc.poo2.red.Cliente;
 import com.uabc.poo2.red.Server;
 import com.uabc.poo2.red.descubrimiento.ServidorEncontrado;
 import com.uabc.poo2.red.protocolo.Protocolo;
 import com.uabc.poo2.util.Utilidades;
 
-public class ServersPageControlador {
+public class ServersPageControlador implements Initializable {
 
   // TODO: rediseñar la pantalla del MatchMaking
   private Cliente cliente;
@@ -35,6 +41,11 @@ public class ServersPageControlador {
   @FXML
   private TextField txtSala;
 
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    Musica.reproducir(Pista.MENU);
+  }
+
   @FXML
   void onIniciarServidorClick(ActionEvent event) {
     String nombreSala = txtSala.getText().trim();
@@ -49,7 +60,8 @@ public class ServersPageControlador {
       detenerBusqueda();
       Platform.runLater(() -> cambiarAPantallaPartida(nombreSala, btnIniciarServidor));
     });
-    // Si el servidor no puede iniciar (puerto ocupado, etc.) se avisa y se rehabilita el boton
+    // Si el servidor no puede iniciar (puerto ocupado, etc.) se avisa y se
+    // rehabilita el boton
     servidor.setOnError(mensaje -> Platform.runLater(() -> {
       Utilidades.alertar("Error de sala", mensaje, Alert.AlertType.ERROR);
       servidor = null;
@@ -88,8 +100,9 @@ public class ServersPageControlador {
   private void actualizarServidores() {
     VBox vbServer = new VBox(20);
 
-       for (ServidorEncontrado server : cliente.getServidoresDisponibles()) {
-      // si yo cree una sala, la sala que esta en mi propia computadora es la mia: no se muestra
+    for (ServidorEncontrado server : cliente.getServidoresDisponibles()) {
+      // si yo cree una sala, la sala que esta en mi propia computadora es la mia: no
+      // se muestra
       if (servidor != null && server.esLocal()) {
         continue;
       }

@@ -126,4 +126,11 @@ public class RepositorioPerfiles {
     }
   }
 
+  public ObjectSet<Perfil> listar() {
+    Query query = db.query();
+    query.constrain(Perfil.class);
+    ObjectSet<Perfil> perfiles = query.execute();
+    return perfiles;
+  }
+
 }
