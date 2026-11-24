@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 
 /**
  * Utilidades
@@ -29,10 +30,24 @@ public class Utilidades {
     try {
 
       FXMLLoader fxmlLoader = new FXMLLoader(Utilidades.class.getResource(RUTA_FXML + recurso));
-      Scene scene = new Scene(fxmlLoader.load());
-      Stage stage = (Stage) origen.getScene().getWindow();
+      Parent raiz = fxmlLoader.load();
+      Scene anterior = origen.getScene();
+      Stage stage = (Stage) anterior.getWindow();
 
-      stage.setScene(scene);
+      double minAncho = Math.max(0, raiz.minWidth(-1));
+      double minAlto = Math.max(0, raiz.minHeight(-1));
+
+      //la ventana conserva el tamaño que ya tenia (si el usuario la agrando o la
+      //maximizo, la pantalla nueva se acomoda a ese tamaño) y solo crece si la
+      //pantalla nueva necesita mas espacio. Los bordes de la ventana se suman al minimo.
+      double bordeAncho = stage.getWidth() - anterior.getWidth();
+      double bordeAlto = stage.getHeight() - anterior.getHeight();
+      double ancho = Math.max(anterior.getWidth(), minAncho);
+      double alto = Math.max(anterior.getHeight(), minAlto);
+
+      stage.setScene(new Scene(raiz, ancho, alto));
+      stage.setMinWidth(minAncho + bordeAncho);
+      stage.setMinHeight(minAlto + bordeAlto);
       stage.setTitle(titulo);
 
       return fxmlLoader; // Aqui devuelvo el fxmlLoader para que puedas sacar el controlador si lo ocupas
