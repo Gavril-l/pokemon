@@ -33,6 +33,9 @@ public class ServersPageControlador implements Initializable {
   private volatile boolean transicionandoAPartida = false;
 
   @FXML
+  private Button btnRegresar;
+
+  @FXML
   private Button btnIniciarServidor;
 
   @FXML
@@ -44,6 +47,18 @@ public class ServersPageControlador implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     Musica.reproducir(Pista.MENU);
+  }
+
+  @FXML
+  void onRegresarClick(ActionEvent event) {
+    detenerBusqueda();
+    if (cliente != null) {
+      cliente.desconectar();
+    }
+    if (servidor != null) {
+      servidor.detener();
+    }
+    Utilidades.cambiarPantalla(event, "Pokemon Card-Jitsu", "principal.fxml");
   }
 
   @FXML
