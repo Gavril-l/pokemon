@@ -158,7 +158,10 @@ public class RepositorioPerfiles {
     });
   }
 
-  /** @return false si ya existe un usuario con ese nombre (la revision y el guardado son una sola operacion) */
+  /**
+   * @return false si ya existe un usuario con ese nombre (la revision y el
+   *         guardado son una sola operacion)
+   */
   public boolean agregarUsuario(Perfil perfil) {
     return conBD(db -> {
       if (buscarEnBD(db, perfil.getNombre()) != null) {
@@ -188,6 +191,18 @@ public class RepositorioPerfiles {
       db.store(perfil);
       db.store(perfil.getHistorialLucha());
       db.store(perfil.getHistorialLucha().getRegistros());
+      return perfil;
+    });
+  }
+
+  public Perfil actualizarPokemonFav(String nombre, String id) {
+    return conBD(db -> {
+      Perfil perfil = buscarEnBD(db, nombre);
+      if (perfil == null) {
+        throw new BaseDeDatosException("No existe el usuario \"" + nombre + "\" en la base de datos");
+      }
+      perfil.setIdPokemonFavorito(id);
+      db.store(perfil);
       return perfil;
     });
   }
