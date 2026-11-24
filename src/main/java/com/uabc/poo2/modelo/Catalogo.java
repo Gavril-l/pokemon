@@ -84,8 +84,8 @@ public class Catalogo {
     agregar(new Pokemon("6767", "ZamanoMon", Tipo.VOLADOR, 67, "negro", "ZamanoMon" + EXT));
 
     // Hada
-    agregar(new Pokemon("036", "Clefable", Tipo.NORMAL, 7, "rosa", "Clefable" + EXT));
-    agregar(new Pokemon("040", "Wigglytuff", Tipo.NORMAL, 7, "rosa", "Wigglytuff" + EXT));
+    agregar(new Pokemon("036", "Clefable", Tipo.HADA, 7, "rosa", "Clefable" + EXT));
+    agregar(new Pokemon("040", "Wigglytuff", Tipo.HADA, 7, "rosa", "Wigglytuff" + EXT));
 
   }
 
